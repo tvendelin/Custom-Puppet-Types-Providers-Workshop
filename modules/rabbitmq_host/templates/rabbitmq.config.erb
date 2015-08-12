@@ -1,0 +1,7 @@
+[
+  {rabbit, [
+  	 <% if ! @cluster_nodes.empty? %>
+     {cluster_nodes, {['<%= (@cluster_nodes - @cluster_nodes.grep(@rabbit_host)).join( %{', '} ) %>'], disc}}
+     <% end %>
+   ]}
+].
