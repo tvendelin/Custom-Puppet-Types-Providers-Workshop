@@ -34,4 +34,9 @@ class rabbitmq_host (
     hasstatus  => true,
     hasrestart => true,
   }
+
+  rabbitmq_vhost { ['/','test_p']:
+    ensure      => 'present',
+    require     => Service['rabbitmq-server'],
+  }
 }
