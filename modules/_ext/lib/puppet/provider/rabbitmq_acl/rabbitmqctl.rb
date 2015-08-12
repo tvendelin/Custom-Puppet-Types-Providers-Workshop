@@ -1,4 +1,7 @@
-Puppet::Type.type(:rabbitmq_acl).provide :rabbitmqctl do
+require 'puppet/provider/rabbitmq'
+
+Puppet::Type.type(:rabbitmq_acl).provide :rabbitmqctl,
+	{ :parent => Puppet::Provider::Rabbitmq } do
 	
 	commands :rabbitmqctl => '/usr/sbin/rabbitmqctl'
 	
@@ -56,49 +59,17 @@ Puppet::Type.type(:rabbitmq_acl).provide :rabbitmqctl do
 	def flush
 		debug "Flushing ACL for >%s< at vhost >%s<" % [@user, @vhost]
 		
-		if ! @property_hash.key?(:ensure)
-			# Creating
+		if ! @property_hash.key?(:ensure) or @property_hash[:ensure] == :present
+			# Creating or Modifying
 			rabbitmqctl '-q',  'set_permissions', '-p', @vhost, @user, 
  				@resource[:configure], @resource[:write], @resource[:read]
-		elsif @property_hash[:ensure] == :present
-			# Modifying
-			rabbitmqctl '-q',  'set_permissions', '-p', @vhost, @user, 
- 				@property_hash[:configure], @property_hash[:write], @property_hash[:read]
  		elsif @property_hash[:ensure] == :absent
 			# Destroying
 			rabbitmqctl '-q',  'clear_permissions', '-p', @vhost, @user
  		end
 	end
 	
-	
 	# Helper methods
-	
-	def self.get_users
-		users = []
-		
-		begin
-			rawout = (rabbitmqctl '-q',  'list_users')
-		rescue
-			Puppet.debug "Could not prefetch RabbitMQ users. Exception:\n%s" % ex.to_s
-			return []
-		end
-		
-		rawout.split("\n").map do |entry|
-			( user, taggs ) = entry.split("\t")
-			taggs = taggs[1, taggs.length - 2 ].split(', ')
-			users << { :name => user, :user => user, :ensure => :present, :taggs => taggs }
-		end
-		return users
-	end
-	
-	def self.get_vhosts
-		begin
-			( rabbitmqctl '-q',  'list_vhosts' ).split("\n")
-		rescue => ex
-			Puppet.debug "Could not prefetch RabbitMQ vhosts. Exception:\n%s" % ex.to_s
-			return []
-		end
-	end
 	
 	def self.get_permissions ( vhost )
 		( rabbitmqctl '-q',  'list_permissions', '-p', vhost ).split("\n").map do |p| 

@@ -1,4 +1,7 @@
-Puppet::Type.type(:rabbitmq_vhost).provide :rabbitmqctl do
+require 'puppet/provider/rabbitmq' 
+
+Puppet::Type.type(:rabbitmq_vhost).provide :rabbitmqctl, 
+	{ :parent => Puppet::Provider::Rabbitmq } do
 	
 	commands :rabbitmqctl => '/usr/sbin/rabbitmqctl'
 	
@@ -52,15 +55,5 @@ Puppet::Type.type(:rabbitmq_vhost).provide :rabbitmqctl do
 		end
 	end
 
-	# Helper methods
-	
-	def self.get_vhosts
-		begin
-			( rabbitmqctl '-q',  'list_vhosts' ).split("\n")
-		rescue => ex
-			Puppet.warning "Could not prefetch vhosts. Exception:\n%s" % ex.to_s
-			return []
-		end
-	end
-	
+	# Helper method(s) moved to the 'class-in-the-middle'
 end 

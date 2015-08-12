@@ -1,6 +1,8 @@
 require 'json'
+require 'puppet/provider/rabbitmq' 
 
-Puppet::Type.type(:rabbitmq_user).provide :rabbitmqctl do
+Puppet::Type.type(:rabbitmq_user).provide :rabbitmqctl, 
+	{ :parent => Puppet::Provider::Rabbitmq } do
 	
 	commands :rabbitmqctl => '/usr/sbin/rabbitmqctl'
 	commands :curl => '/usr/bin/curl'
@@ -67,25 +69,6 @@ Puppet::Type.type(:rabbitmq_user).provide :rabbitmqctl do
 		rabbitmqctl '-q',  'set_user_tags', @resource[:user], val
 	end
 	
-	# Helper method(s)
-	
-	def self.get_users
-		users = []
-		
-		begin
-			rawout = (rabbitmqctl '-q',  'list_users')
-		rescue
-			Puppet.debug 'No RabbitMQ user seem to exist.'
-			return []
-		end
-		
-		rawout.split("\n").map do |entry|
-			( user, taggs ) = entry.split("\t")
-			taggs = taggs[1, taggs.length - 2 ].split(', ')
-			users << { :name => user, :user => user, :ensure => :present, :taggs => taggs }
-		end
-		return users
-	end
-	
+	# Helper method(s) moved to the 'class-in-the-middle'
 	
 end 
