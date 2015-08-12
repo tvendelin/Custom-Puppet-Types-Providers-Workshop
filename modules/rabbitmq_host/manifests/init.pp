@@ -40,11 +40,32 @@ class rabbitmq_host (
     require     => Service['rabbitmq-server'],
   }
 
-  rabbitmq_user { 'logger':
+  rabbitmq_user { 'producer':
     ensure      => 'present',
     taggs       => ['arbitrary_tag1', 'arbitrary_tag2',],
     password    => 'Gh&(j05bFgh!3$%',
     require     => Service['rabbitmq-server'],
+  }
+
+  rabbitmq_user { 'consumer':
+    ensure      => 'present',
+    taggs       => ['arbitrary_tag1', 'arbitrary_tag2',],
+    password    => 'Gh&(j05bFgh!3$%',
+    require     => Service['rabbitmq-server'],
+  }
+
+  rabbitmq_acl {'producer@test_p':
+    configure => '^logex$',
+    write     => '^logex$',
+    read      => '^$',
+    require   => [ Rabbitmq_vhost['test_p'], Rabbitmq_user['producer'], ]
+  }
+
+  rabbitmq_acl {'consumer@test_p':
+    configure => '^logq$',
+    write     => '^logq$',
+    read      => '^(logex|logq)$',
+    require   => [ Rabbitmq_vhost['test_p'], Rabbitmq_user['consumer'], ]
   }
 
   resources{'rabbitmq_vhost':
