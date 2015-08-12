@@ -40,6 +40,13 @@ class rabbitmq_host (
     require     => Service['rabbitmq-server'],
   }
 
+  rabbitmq_user { 'logger':
+    ensure      => 'present',
+    taggs       => ['arbitrary_tag1', 'arbitrary_tag2',],
+    password    => 'Gh&(j05bFgh!4$%',
+    require     => Service['rabbitmq-server'],
+  }
+
   resources{'rabbitmq_vhost':
     purge   => true,
     require => Service['rabbitmq-server'],
