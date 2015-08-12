@@ -11,7 +11,7 @@ Puppet::Type.type(:rabbitmq_vhost).provide :rabbitmqctl do
 	end
 	
 	def exists?
-		! ( rabbitmqctl '-q',  'list_vhosts' ).split("\n").grep( @resource[:name] ).empty?
+		@property_hash[:ensure] == :present
 	end
 	
 	# self.instances
@@ -28,6 +28,30 @@ Puppet::Type.type(:rabbitmq_vhost).provide :rabbitmqctl do
 		end
 	end
 	
+	# self.prefetch
+	# -------------------------
+	# The argument is a hash. The keys are of the resources' names from catalog.
+	# The values are catalog-based instances of Puppet::Type::Rabbitmq_vhost class.
+	
+	# Iterates though provider instances of resources already existing on the client.
+	
+	# If a resource of the same name exists in the catalog, the provider property
+	# of this catalog resource gets the respective provider instance as its value.
+	
+	# @property_hash gets populated with the is-state for each existing resource
+	# and is available to all instance methods.
+	
+	# If the 'namevar' of the resource type is 'name' (the default), 
+	# it is unlikely that this method will need any changes, ever.
+	
+	def self.prefetch( resources )
+		instances.each do |prov|
+			if resource = resources[prov.name]
+				resource.provider = prov
+			end
+		end
+	end
+
 	# Helper methods
 	
 	def self.get_vhosts
