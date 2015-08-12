@@ -39,4 +39,9 @@ class rabbitmq_host (
     ensure      => 'present',
     require     => Service['rabbitmq-server'],
   }
+
+  resources{'rabbitmq_vhost':
+    purge   => true,
+    require => Service['rabbitmq-server'],
+  }
 }

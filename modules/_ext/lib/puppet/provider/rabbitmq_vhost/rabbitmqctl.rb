@@ -14,14 +14,19 @@ Puppet::Type.type(:rabbitmq_vhost).provide :rabbitmqctl do
 		! ( rabbitmqctl '-q',  'list_vhosts' ).split("\n").grep( @resource[:name] ).empty?
 	end
 	
+	# self.instances
+	# -------------------------
+	# Query the system for existing resource instances. For each resource,
+	# initialise an instance of Puppet::Type::Rabbitmq_vhost::ProviderRabbitmqctl
+	# by calling new()
+	
 	def self.instances
-		Puppet.debug "Running self.instances method"
+		Puppet.debug "Running self.instances method for %s" % self
 		instances = []
 		get_vhosts.map do |vhost|
 			new( :name => vhost.to_s, :ensure => :present )
 		end
 	end
-	
 	
 	# Helper methods
 	
