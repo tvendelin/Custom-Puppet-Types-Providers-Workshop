@@ -43,7 +43,7 @@ class rabbitmq_host (
   rabbitmq_user { 'logger':
     ensure      => 'present',
     taggs       => ['arbitrary_tag1', 'arbitrary_tag2',],
-    password    => 'Gh&(j05bFgh!4$%',
+    password    => 'Gh&(j05bFgh!3$%',
     require     => Service['rabbitmq-server'],
   }
 

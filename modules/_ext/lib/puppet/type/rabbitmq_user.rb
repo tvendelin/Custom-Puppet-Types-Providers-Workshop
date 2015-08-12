@@ -22,6 +22,15 @@ Puppet::Type.newtype(:rabbitmq_user) do
 					(must contain at least 8 non-space characters)" % val
 			end
 		end
+		
+		# Overriding stringification methods for log messages
+		def is_to_s(value)
+			'*****'
+		end
+		
+		def should_to_s(value)
+			'*****'
+		end	
 	end
 	
  	newparam(:mgmt_port) do
@@ -57,5 +66,10 @@ Puppet::Type.newtype(:rabbitmq_user) do
  			Puppet.debug "Not in sync: taggs"
  			return false
  		end
+ 		
+ 		def should_to_s(value)
+			"['" + [value].flatten.join("', '") + "'\]"
+		end	
  	end
+	
 end
