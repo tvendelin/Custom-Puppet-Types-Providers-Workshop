@@ -46,6 +46,8 @@ class rabbitmq_host::packages(
 #    before => Package['rabbitmq-server'],
 #  }
 
+  package { 'ruby-json': }
+
   package { 'rabbitmq-server':
     ensure=>"${version}" # MUST be same across cluster
   }

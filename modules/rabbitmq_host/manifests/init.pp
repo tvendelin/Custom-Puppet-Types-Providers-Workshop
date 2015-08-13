@@ -29,6 +29,12 @@ class rabbitmq_host (
     notify  => Service['rabbitmq-server'],
   }
 
+  rabbitmq_cookie {'abracadabra':
+    ensure    => 'present',
+    before    => Service['rabbitmq-server'],
+    notify    => Service['rabbitmq-server'],
+  }
+
   service { 'rabbitmq-server':
     ensure     => 'running',
     hasstatus  => true,
@@ -68,8 +74,22 @@ class rabbitmq_host (
     require   => [ Rabbitmq_vhost['test_p'], Rabbitmq_user['consumer'], ]
   }
 
-  resources{'rabbitmq_vhost':
-    purge   => true,
-    require => Service['rabbitmq-server'],
+  rabbitmq_policy{"logpile":
+    policy    => { 'ha-mode'       => 'exactly',
+                   'ha-params'     => '2' },
+    vhost     => 'test_p',
+    apply_to   => 'queues',
+    match => '^logq$',
+    priority  =>'1',
+    require   => Rabbitmq_vhost['test_p'],
+  }
+
+  resources{
+    [ 'rabbitmq_vhost',
+      'rabbitmq_user',
+      'rabbitmq_acl',
+      'rabbitmq_policy']:
+        purge   => true,
+        require => Service['rabbitmq-server'],
   }
 }
