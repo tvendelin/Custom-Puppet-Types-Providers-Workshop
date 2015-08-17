@@ -1,6 +1,6 @@
 class rabbitmq_host (
   $cluster_nodes = ['rabbit@demomq1', 'rabbit@demomq2', 'rabbit@demomq3'],
-  $version = '3.5.3-1',
+  $version = 'latest',
   $confdir = '/etc/rabbitmq',
   $rabbitmq_user = 'rabbitmq',
 ) {
