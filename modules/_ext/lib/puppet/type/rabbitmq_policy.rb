@@ -27,34 +27,28 @@ Puppet::Type.newtype(:rabbitmq_policy) do
 	end
 	
 	newproperty( :policy ) do
-		desc 'RabbitMQ policy definition. A hash of policy parameters and their
-		values. If a value is a list, it should be passed as an array. This
-		will be converted internally into a JSON-formatted string. Example:
-		policy => { "ha-mode" => "nodes", "node-names" => [ "nodeA", "nodeB" ] } 
+		desc 'RabbitMQ policy definition, must be a valid JSON string. 
+		Make sure to use double quotes for strings. Handled as a hash internally.
 		'
 		
 		validate do |val|
-			if ! val.class.name.eql? 'Hash'
-				raise ArgumentError, 
-					"Policy must be a Hash ( { 'key' => 'value' } ) , got >%s<" % val.class.name
-			end
-			
-			val.each do | k, v |
-				if k !~/^[\w\-]+$/ or v !~/^[\w\-]+$/ 
-					raise ArgumentError, 
-						"Policy keys and values can contain [a-zA-Z0-9_-], got >%s<" % val.to_s
-				end
+			begin
+				JSON.parse(val)
+			rescue => ex
+				raise ArgumentError, "Invalid JSON string: %s" % ex.to_s
 			end
 		end
 		
 		munge do |val|
-			val.each do |k,v|
-				val[k] = v.to_i if v =~/^\d+$/
-			end
+			JSON.parse(val)
 		end
 		
+		def is_to_s(oldvalue)
+    		oldvalue.to_json
+  		end
+		
 		def should_to_s(newvalue)
-    		newvalue
+    		newvalue.to_json
   		end
 	end
 	

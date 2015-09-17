@@ -75,8 +75,7 @@ class rabbitmq_host (
   }
 
   rabbitmq_policy{"logpile":
-    policy    => { 'ha-mode'       => 'exactly',
-                   'ha-params'     => '2' },
+    policy    => '{ "ha-mode":"exactly","ha-params":2 }',
     vhost     => 'test_p',
     apply_to   => 'queues',
     match => '^logq$',
