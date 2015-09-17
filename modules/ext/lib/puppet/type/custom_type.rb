@@ -2,12 +2,12 @@ Puppet::Type.newtype(:custom_type) do
 	ensurable do
 		newvalue(:present) do
 			Puppet.info "%s: Running [%s] instance method" % [self.class, __method__]
-			provider.create
+			provider.yes_please
 		end
 		
 		newvalue(:absent) do
 			Puppet.info "%s: Running [%s] instance method" % [self.class, __method__]
-			provider.destroy
+			provider.rather_not
 		end
 		
 		

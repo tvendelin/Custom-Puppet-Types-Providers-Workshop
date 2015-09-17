@@ -44,12 +44,14 @@ Puppet::Type.type(:custom_type).provide :custom_provider1 do
 	end
 	
 	# Create the resource, if it doesn't exist already
-	def create
+	#def create
+	def yes_please
 		Puppet.notice "%s: Running [%s] instance method" % [self.name, __method__]
 	end
 	
 	# Destroy the resource, if it exists and must be destroyed
-	def destroy
+	#def destroy
+	def rather_not
 		Puppet.notice "%s: Running [%s] instance method" % [self.name, __method__]
 		@property_hash[:ensure] = :absent
 	end
